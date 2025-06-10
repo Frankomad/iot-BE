@@ -48,11 +48,50 @@ final class SensorReadingService
             throw new \LogicException('High threshold not found');
         }
 
+        // DEBUG: Log threshold comparison
+        error_log("DEBUG: Sensor reading level: " . $sensorReading->getLevel() . " dB");
+        error_log("DEBUG: High threshold level: " . $highThreshold->getLevel() . " dB");
+        error_log("DEBUG: Should trigger notification: " . ($sensorReading->getLevel() > $highThreshold->getLevel() ? 'YES' : 'NO'));
+
         if ($sensorReading->getLevel() > $highThreshold->getLevel()) {
+            error_log("DEBUG: Calling notification service for sensor: " . $sensorReading->getSensor()->getHwid());
             $this->notificationService->sendNotifications($sensorReading);
+            error_log("DEBUG: Notification service call completed");
         }
 
         return $sensorReading;
+    }
+
+    public function saveSensorReading(SensorReading $sensorReading): void
+    {
+        // DEBUG: Log when a new reading is being saved
+        error_log("DEBUG: ⚡ NEW SENSOR READING BEING SAVED ⚡");
+        error_log("DEBUG: Sensor: " . $sensorReading->getSensor()->getHwid());
+        error_log("DEBUG: Level: " . $sensorReading->getLevel() . " dB");
+        error_log("DEBUG: Time: " . $sensorReading->getReadedAt()->format('Y-m-d H:i:s'));
+
+        $this->entityManager->persist($sensorReading);
+        $this->entityManager->flush();
+
+        $highThreshold = $this->thresholdRepository->findOneBy(['type' => ThresholdType::HIGH]);
+        if (null === $highThreshold) {
+            error_log("DEBUG: ❌ HIGH THRESHOLD NOT FOUND");
+            throw new \LogicException('High threshold not found');
+        }
+
+        // DEBUG: Log threshold comparison
+        error_log("DEBUG: Sensor reading level: " . $sensorReading->getLevel() . " dB");
+        error_log("DEBUG: High threshold level: " . $highThreshold->getLevel() . " dB");
+        error_log("DEBUG: Should trigger notification: " . ($sensorReading->getLevel() > $highThreshold->getLevel() ? 'YES' : 'NO'));
+
+        if ($sensorReading->getLevel() > $highThreshold->getLevel()) {
+            error_log("DEBUG: 🚨 TRIGGERING NOTIFICATION! 🚨");
+            error_log("DEBUG: Calling notification service for sensor: " . $sensorReading->getSensor()->getHwid());
+            $this->notificationService->sendNotifications($sensorReading);
+            error_log("DEBUG: Notification service call completed");
+        } else {
+            error_log("DEBUG: ✅ No notification needed - level below threshold");
+        }
     }
 
     public function getLastReading(Sensor $sensor): ?SensorReading

@@ -10,6 +10,7 @@ use App\Entity\Threshold;
 use App\Enum\ThresholdType;
 use App\Repository\SensorRepository;
 use App\Repository\ThresholdRepository;
+use App\Service\SensorReadingService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
@@ -23,6 +24,7 @@ class MockCommand extends Command
         private EntityManagerInterface $entityManager,
         private SensorRepository $sensorRepository,
         private ThresholdRepository $thresholdRepository,
+        private SensorReadingService $sensorReadingService,
     )
     {
         parent::__construct();
@@ -44,8 +46,9 @@ class MockCommand extends Command
             $reading->setReadedAt(new \DateTimeImmutable());
             $reading->setLevel(random_int(1, 100));
             $reading->setSensor($sensor);
-            $this->entityManager->persist($reading);
-            $this->entityManager->flush();
+            
+            // Use the service to save the reading, which will trigger notifications
+            $this->sensorReadingService->saveSensorReading($reading);
 
             sleep(5);
         }
