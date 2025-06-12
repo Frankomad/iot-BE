@@ -8,6 +8,7 @@ use App\DTO\SensorReadingDTO;
 use App\Entity\Sensor;
 use App\Entity\SensorReading;
 use App\Service\SensorReadingService;
+use App\Service\SensorService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -22,7 +23,7 @@ final class HomeAssistantController extends AbstractController
 
     public function __construct(
         private readonly SensorReadingService $sensorReadingService,
-        private readonly EntityManagerInterface $entityManager,
+        private readonly SensorService $sensorService,
     )
     {
     }
@@ -30,11 +31,7 @@ final class HomeAssistantController extends AbstractController
     #[Route(path:'/sensor' ,methods: ['POST'])]
     public function createSensorAction(#[MapRequestPayload] SensorDTO $sensorDTO): JsonResponse
     {
-        $sensor = new Sensor();
-        $sensor->setHwid($sensorDTO->hwid);
-        $this->entityManager->persist($sensor);
-        $this->entityManager->flush();
-        return $this->json($sensor);
+        return $this->json($this->sensorService->createSensor($sensorDTO));
     }
 
     #[Route(path:'/sensorReading' ,methods: ['POST'])]

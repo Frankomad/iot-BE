@@ -26,6 +26,9 @@ class Sensor
     #[ORM\Column(length: 255)]
     private ?string $hwid = null;
 
+    #[ORM\Column(length: 255)]
+    private ?string $location = null;
+
     public function __construct()
     {
         $this->sensorReadings = new ArrayCollection();
@@ -74,6 +77,18 @@ class Sensor
     public function setHwid(string $hwid): static
     {
         $this->hwid = $hwid;
+
+        return $this;
+    }
+
+    public function getLocation(): ?string
+    {
+        return $this->location;
+    }
+
+    public function setLocation(string $location): static
+    {
+        $this->location = $location;
 
         return $this;
     }

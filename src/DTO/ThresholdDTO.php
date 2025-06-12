@@ -8,6 +8,7 @@ class ThresholdDTO
 {
     public function __construct(
         public string $type,
+        public string $sensorHwid,
         public int $level,
     )
     {

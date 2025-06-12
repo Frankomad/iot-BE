@@ -8,6 +8,7 @@ class SensorDTO
 {
     public function __construct(
         public string $hwid,
+        public string $location,
     )
     {
     }

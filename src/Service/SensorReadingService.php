@@ -43,7 +43,7 @@ final class SensorReadingService
         $this->entityManager->persist($sensorReading);
         $this->entityManager->flush();
 
-        $highThreshold = $this->thresholdRepository->findOneBy(['type' => ThresholdType::HIGH]);
+        $highThreshold = $this->thresholdRepository->findOneBy(['type' => ThresholdType::HIGH, 'sensor' => $sensor]);
         if (null === $highThreshold) {
             throw new \LogicException('High threshold not found');
         }
