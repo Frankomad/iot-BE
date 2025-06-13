@@ -10,7 +10,8 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 final class ThresholdService
 {
-    public const string HOME_ASSISTANT_ENDPOINT = 'http://192.168.239.50:1880/endpoint/threshold';
+    // Set this endpoint to your custom Home Assistant endpoint
+    public const HOME_ASSISTANT_ENDPOINT = 'http://192.168.239.50:1880/endpoint/threshold';
 
     public function __construct(
         private HttpClientInterface $httpClient,
@@ -21,19 +22,15 @@ final class ThresholdService
 
     public function sendToHomeAssistant(ThresholdDTO $thresholdDTO): void
     {
-        try {
-            $json = $this->serializer->serialize($thresholdDTO, 'json');
 
-            $response = $this->httpClient->request('POST', self::HOME_ASSISTANT_ENDPOINT, [
-                'headers' => [
-                    'Content-Type' => 'application/json'
-                ],
-                'body' => $json,
-            ]);
-        } catch (\Exception $exception) {
-            dump($exception);
-            throw $exception;
-        }
+        $json = $this->serializer->serialize($thresholdDTO, 'json');
+
+        $response = $this->httpClient->request('POST', self::HOME_ASSISTANT_ENDPOINT, [
+            'headers' => [
+                'Content-Type' => 'application/json',
+            ],
+            'body' => $json,
+        ]);
 
         if ($response->getStatusCode() !== 200) {
             throw new \RuntimeException('Failed to send home assistant IP address');

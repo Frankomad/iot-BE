@@ -51,10 +51,9 @@ final class ThresholdController extends AbstractController
         }
 
         $threshold->setLevel($thresholdDTO->level);
+        $this->entityManager->flush();
 
         $this->thresholdService->sendToHomeAssistant($thresholdDTO);
-
-        $this->entityManager->flush();
 
         return $this->json($threshold);
     }
